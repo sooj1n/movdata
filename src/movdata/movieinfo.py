@@ -30,7 +30,7 @@ def load_json(year):
 	save_data(year,movie_codes)
 	return movie_codes
 
-def save_data(year,movie_codes,sleep_time=1):
+def save_data(year,movie_codes,sleep_time=0.1):
 	#file_path = f'data/movies/year={year}/movieinfo.json'
 	url_base = f'http://www.kobis.or.kr/kobisopenapi/webservice/rest/movie/searchMovieInfo.json?key={API_KEY}'
 	all_data = []
@@ -38,7 +38,7 @@ def save_data(year,movie_codes,sleep_time=1):
 		time.sleep(sleep_time)
 		r = req(url_base + f"&movieCd={code}")
 		d = r['movieInfoResult']['movieInfo']
-		all_data.extend(d)
+		all_data.append(d)
 
 	save_json(year,all_data)
 	return True
