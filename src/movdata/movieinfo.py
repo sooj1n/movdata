@@ -38,7 +38,7 @@ def save_data(year,movie_codes,sleep_time=1):
 		time.sleep(sleep_time)
 		r = req(url_base + f"&movieCd={code}")
 		d = r['movieInfoResult']['movieInfo']
-		all_data.extend(d)
+		all_data.append(d)
 
 	save_json(year,all_data)
 	return True
