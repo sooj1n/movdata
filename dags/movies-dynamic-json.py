@@ -26,21 +26,45 @@ with DAG(
         'retries': 1,
         'retry_delay': timedelta(seconds=3),
     },
+    schedule="@once",
     max_active_runs=1,
     max_active_tasks=3,
     description='movie_data_spark',
-    schedule_interval=timedelta(days=1),
-    start_date=datetime(2015, 1, 1),
-    end_date=datetime(2015,1,7),
+    #schedule_interval=timedelta(days=1),
+    start_date=datetime(2019, 1, 1),
+    #end_date=datetime(2015,1,7),
     catchup=True,
     tags=['dynamic','movie','json'],
 ) as dag:
 
+    def get_data():
+	from movdata.get_data import save_movies
+	save_movies(year)
+
 
     start=EmptyOperator(task_id='start')
-    get_data=EmptyOperator(task_id='get.data')
-    parsing_parquet=EmptyOperator(task_id='parsing.parquet')
-    select_parquet=EmptyOperator(task_id='select.parquet')
+   
+    get_data = PythonVirtualenvOperator(
+            task_id='get.data',
+            python_callable=get_data,
+	    #equirements=["git+https://github.com/sooj1n/mov.git@0.2/api"],
+	    equirements=["git+https://github.com/sooj1n/movdata.git@0.2.1/airflow"],
+            system_site_packages=False
+    )
+
+    parsing_parquet = BashOperator(
+	    task_id='parsing.parquet',
+	    bash_command="""
+		echo "parsing"
+	    """
+	    )
+    select_parquet = BashOperator(
+            task_id='select.parquet',
+            bash_command="""
+                echo "select"
+            """
+            )
+
     end=EmptyOperator(task_id='end')
 
     start >> get_data >> parsing_parquet >> select_parquet >> end
