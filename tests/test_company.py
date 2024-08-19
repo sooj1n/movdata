@@ -36,14 +36,9 @@ def test_movieinfo():
 	assert r
 	'''
 
-#from movdata.people import load_json
-#def test_people():
-#	r = load_json('2015')
-#	#pprint(r)
-#	assert r
-
-from movdata.people import save_data
-def test_save():
-	r = save_data('2015',['김태리','표지훈'])
-	pprint(r)
+from movdata.people import load_json
+def test_people():
+	r = load_json('2015')
+	#pprint(r)
 	assert r
+
