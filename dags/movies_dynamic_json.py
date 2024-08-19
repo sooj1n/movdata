@@ -57,7 +57,7 @@ with DAG(
     parsing_parquet = BashOperator(
             task_id='parsing.parquet',
             bash_command="""
-                echo "parsing"
+                $SPARK_HOME/bin/spark-submit /home/sujin/code/movdata/src/movdata/parsing_parquet.py "PARSING_TASK_APP" {{ ds[:4] }}
             """
     
     )
@@ -65,7 +65,7 @@ with DAG(
     select_parquet = BashOperator(
             task_id='select.parquet',
             bash_command="""
-                echo "select"
+                $SPARK_HOME/bin/spark-submit /home/sujin/code/movdata/src/movdata/select_parquet.py "SELECT_TASK_APP" {{ ds[:4] }}
             """
     )
 
