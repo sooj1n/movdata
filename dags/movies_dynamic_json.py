@@ -16,7 +16,7 @@ from airflow.operators.python import (
 )
 
 with DAG(
-    'movies-dynamic-json',
+    'movies_dynamic_json',
     # These args will get passed on to each operator
     # You can override them on a per-task basis during operator initialization
     default_args={
@@ -36,34 +36,38 @@ with DAG(
     catchup=True,
     tags=['dynamic','movie','json'],
 ) as dag:
-
-    def get_data():
-	from movdata.get_data import save_movies
-	save_movies(year)
+    
+    def fun_getdata(dt):
+        print('*'*1000)
+        print(dt)
+        from movdata.get_data import save_movies
+        save_movies(dt)
 
 
     start=EmptyOperator(task_id='start')
-   
+
     get_data = PythonVirtualenvOperator(
             task_id='get.data',
-            python_callable=get_data,
-	    #equirements=["git+https://github.com/sooj1n/mov.git@0.2/api"],
-	    equirements=["git+https://github.com/sooj1n/movdata.git@0.2.1/airflow"],
+            python_callable=fun_getdata,
+            requirements=["git+https://github.com/sooj1n/movdata.git@0.2.1/airflow"],
+            op_args=["{{ ds[:4] }}"],
             system_site_packages=False
     )
 
     parsing_parquet = BashOperator(
-	    task_id='parsing.parquet',
-	    bash_command="""
-		echo "parsing"
-	    """
-	    )
+            task_id='parsing.parquet',
+            bash_command="""
+                echo "parsing"
+            """
+    
+    )
+
     select_parquet = BashOperator(
             task_id='select.parquet',
             bash_command="""
                 echo "select"
             """
-            )
+    )
 
     end=EmptyOperator(task_id='end')
 

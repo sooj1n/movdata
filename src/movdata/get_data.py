@@ -19,7 +19,7 @@ def req(url):
     return j
 	
 def save_movies(year):
-	file_path = f'data/movies/year={year}/airflow_data.json'
+	file_path = f'code/movdata/data/movies/year={year}/airflow_data.json'
 
 	# 위 경로가 있으면 API 호출을 멈추고 프로그램 종료
 	if os.path.exists(file_path):
